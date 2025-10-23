@@ -172,7 +172,7 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
             // 如果没写全，则说明写满了，保留剩余没写全的部分并退出
             if (write_num < iter->second.size()) {
                 _unassembled_bytes_num += iter->second.size() - write_num;
-                _unassemble_strs.insert(make_pair(_next_assembled_idx, std::move(iter->second.substr(write_num))));
+                _unassemble_strs.insert(make_pair(_next_assembled_idx, iter->second.substr(write_num)));
 
                 _unassembled_bytes_num -= iter->second.size();
                 _unassemble_strs.erase(iter);
