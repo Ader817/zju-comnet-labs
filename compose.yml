@@ -1,0 +1,12 @@
+services:
+  zju-comnet-labs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cs144-dev:latest
+    container_name: cs144-dev
+    hostname: cs144-dev
+    volumes:
+      - .:/zju-comnet-labs
+    working_dir: /zju-comnet-labs
+    tty: true
