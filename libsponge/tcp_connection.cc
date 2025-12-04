@@ -8,7 +8,7 @@
 // automated checks run by `make check`.
 
 template <typename... Targs>
-void DUMMY_CODE(Targs &&... /* unused */) {}
+void DUMMY_CODE(Targs &&.../* unused */) {}
 
 using namespace std;
 
@@ -20,12 +20,11 @@ size_t TCPConnection::unassembled_bytes() const { return {}; }
 
 size_t TCPConnection::time_since_last_segment_received() const { return {}; }
 
-void TCPConnection::segment_received(const TCPSegment &seg) { 
-    
+void TCPConnection::segment_received(const TCPSegment &seg) {
     bool need_send_ack = seg.length_in_sequence_space();
     // you code here.
     //你需要考虑到ACK包、RST包等多种情况
-    
+
     //状态变化(按照个人的情况可进行修改)
     // 如果是 LISEN 到了 SYN
     if (TCPState::state_summary(_receiver) == TCPReceiverStateSummary::SYN_RECV &&
