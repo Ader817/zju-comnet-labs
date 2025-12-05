@@ -7,6 +7,8 @@
 
 #include <optional>
 #include <queue>
+#include <unordered_map>
+#include <vector>
 
 //! \brief A "network interface" that connects IP (the internet layer, or network layer)
 //! with Ethernet (the network access layer, or link layer).
@@ -31,6 +33,20 @@
 //! and learns or replies as necessary.
 class NetworkInterface {
   private:
+    //! \brief Timeout for arp table entry in milliseconds
+    static constexpr size_t ARP_ENTRY_TTL_MS = 30000;
+
+    //! \brief Timeout for arp request in milliseconds
+    static constexpr size_t ARP_REQUEST_TTL_MS = 5000;
+
+    using time_t = size_t;
+    
+    //! \brief Arp table entry
+    struct ArpTableEntry {
+        EthernetAddress ethernet_address;
+        time_t ttl;
+    };
+    
     //! Ethernet (known as hardware, network-access-layer, or link-layer) address of the interface
     EthernetAddress _ethernet_address;
 
@@ -39,6 +55,15 @@ class NetworkInterface {
 
     //! outbound queue of Ethernet frames that the NetworkInterface wants sent
     std::queue<EthernetFrame> _frames_out{};
+
+    //! \brief Arp table
+    std::unordered_map<uint32_t, ArpTableEntry> _arp_table{};
+
+    //! \brief waiting list of datagrams to be sent
+    std::unordered_map<uint32_t, std::vector<InternetDatagram>> _datagrams_waiting_list{};
+
+    //! \brief ARP requests that have been sent but not yet answered
+    std::unordered_map<uint32_t, time_t> _arp_requests_sent{};
 
   public:
     //! \brief Construct a network interface with given Ethernet (network-access-layer) and IP (internet-layer) addresses
