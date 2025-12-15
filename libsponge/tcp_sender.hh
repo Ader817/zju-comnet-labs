@@ -8,6 +8,7 @@
 
 #include <functional>
 #include <queue>
+#include <deque>
 
 //! \brief The "sender" part of a TCP implementation.
 
@@ -17,11 +18,20 @@
 //! segments if the retransmission timer expires.
 class TCPSender {
   private:
+    //! \brief Structure to store a segment with its starting sequence number
+    struct SegmentWithSeqno {
+        uint64_t start_seqno;  //!< Starting absolute sequence number
+        TCPSegment segment;    //!< The TCP segment
+    };
+
     //! our initial sequence number, the number for our SYN.
     WrappingInt32 _isn;
 
     //! outbound queue of segments that the TCPSender wants sent
     std::queue<TCPSegment> _segments_out{};
+
+    //! deque of segments that have been sent but not yet acknowledged
+    std::deque<SegmentWithSeqno> _segments_in_flight{};
 
     //! retransmission timer for the connection
     unsigned int _initial_retransmission_timeout;
@@ -31,6 +41,27 @@ class TCPSender {
 
     //! the (absolute) sequence number for the next byte to be sent
     uint64_t _next_seqno{0};
+
+    //! number of consecutive retransmissions
+    unsigned int _consecutive_retransmissions{0};
+
+    //! size of the receiver's advertised window
+    size_t _window_size{1};
+
+    //! timer for retransmissions (time elapsed since last segment sent)
+    size_t _retransmission_timer{0};
+
+    //! current RTO value (may be doubled on retransmission)
+    unsigned int _current_rto{0};
+
+    //! whether the retransmission timer is running
+    bool _timer_running{false};
+
+    //! syn flag indicating whether SYN has been sent
+    bool _syn_sent{false};
+
+    //! fin flag indicating whether FIN has been sent
+    bool _fin_sent{false};
 
   public:
     //! Initialize a TCPSender
@@ -87,6 +118,9 @@ class TCPSender {
     //! \brief relative seqno for the next byte to be sent
     WrappingInt32 next_seqno() const { return wrap(_next_seqno, _isn); }
     //!@}
+
+    //! \brief effective window size for the sender
+    inline size_t effective_window_size() const { return _window_size == 0 ? 1 : _window_size; }
 };
 
 #endif  // SPONGE_LIBSPONGE_TCP_SENDER_HH

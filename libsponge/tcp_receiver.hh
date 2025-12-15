@@ -19,6 +19,14 @@ class TCPReceiver {
 
     //! The maximum number of bytes we'll store.
     size_t _capacity;
+    
+    //! Inital sequence number
+    std::optional<WrappingInt32> _isn;
+
+    //! Status of TCP connection
+    enum class Status : char { LISTEN = 0, SYN_RECV, FIN_RECV };
+
+    Status _status{Status::LISTEN};
 
   public:
     //! \brief Construct a TCP receiver
