@@ -4,6 +4,8 @@
 #include <cstdlib>
 #include <iostream>
 
+#include "tcp_sponge_socket.hh"
+
 using namespace std;
 
 void get_URL(const string &host, const string &path) {
@@ -18,7 +20,8 @@ void get_URL(const string &host, const string &path) {
     // the "eof" (end of file).
 
     Address address(host, "http");
-    TCPSocket socket;
+    // TCPSocket socket;
+    FullStackSocket socket; // 使用我们实现的 TCP Socket 代替内置的 TCPSocket
     socket.connect(address);
     string request = "GET " + path + " HTTP/1.1\r\nHost: " + host + "\r\nConnection: close\r\n\r\n";
     socket.write(request);
@@ -26,8 +29,9 @@ void get_URL(const string &host, const string &path) {
     while (!socket.eof()) {
         cout << socket.read();
     }
-    socket.close();
+    socket.close(); // 主动关闭连接
 
+    socket.wait_until_closed(); // 主动关闭方需要等待连接彻底关闭
     // cerr << "Function called: get_URL(" << host << ", " << path << ").\n";
     // cerr << "Warning: get_URL() has not been implemented yet.\n";
 }
