@@ -21,7 +21,7 @@ class TCPReceiver {
     size_t _capacity;
     
     //! Inital sequence number
-    std::optional<WrappingInt32> _isn;
+    std::optional<WrappingInt32> _isn{};
 
     //! Status of TCP connection
     enum class Status : char { LISTEN = 0, SYN_RECV, FIN_RECV };

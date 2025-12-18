@@ -18,7 +18,7 @@ class ByteStream {
     // that's a sign that you probably want to keep exploring
     // different approaches.
 
-    size_t _capacity;            //!< Maximum number of bytes the stream can hold
+    size_t _capacity{};            //!< Maximum number of bytes the stream can hold
     std::deque<char> _buffer{};  //!< Buffer to hold the bytes
     bool _input_ended{};         //!< Flag indicating that the input has ended
     bool _error{};               //!< Flag indicating that the stream suffered an error.

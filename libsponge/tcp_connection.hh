@@ -22,6 +22,12 @@ class TCPConnection {
     bool _linger_after_streams_finish{true};
     bool _is_active{true};
 
+    //! time since last segment received, used for TIME_WAIT state
+    size_t _time_since_last_segment_received{0};
+
+    //! \brief Send all segments from the sender, filling in fields ackno and window as necessary
+    void send_segments();
+
   public:
     //! \name "Input" interface for the writer
     //!@{
